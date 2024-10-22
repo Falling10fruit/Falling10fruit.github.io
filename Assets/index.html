@@ -4,6 +4,11 @@
 		<title>Triangle</title>
 		
 		<style>
+			:root {
+				--searchHeight: 50px;
+				--searchWidth: 400px;
+			}
+		
 			body {
 				margin: 0px;
 				overflow: hidden;
@@ -24,25 +29,39 @@
 			}
 			
 			#searchbarDiv {
-				height: 50px;
-				border-radius: 10px;
+				height: var(--searchHeight);
+				width: var(--searchWidth);
 			
 				display: flex;
 				align-items: center;
 				justify-content: center;
 			}
 			
-			#searchInput {
-				height: 100%;
-				padding: 0px;
-				border: none;
-			}
-			
 			#searchButton {
 				height: 100%;
-				width: 50px;
+				width: var(--searchHeight);
 				padding: 0px;
 				border: none;
+				border-radius: calc(var(--searchHeight)/2) 0px 0px calc(var(--searchHeight)/2);
+				background-color: rgb(255, 255, 255);
+			}
+			
+			#searchButton:hover {
+				background-color: rgb(220, 220, 220);
+			}
+			
+			#searchInput {
+				height: 100%;
+				width: calc(var(--searchWidth) - var(--searchHeight));
+				padding: 0px;
+				padding-left: 10px;
+				padding-right: 10px;
+				border: none;
+				border-radius: 0px calc(var(--searchHeight)/2) calc(var(--searchHeight)/2) 0px;
+			}
+			
+			#searchInput:focus {
+				outline: none;
 			}
 		</style>
 	</head>
@@ -51,16 +70,21 @@
 		
 		<div id="searchContainer">
 			<div id="searchbarDiv"> 
-				<input id="searchInput" type="text">
-				<button id="searchButton">
+				<button id="searchButton" onclick="search()">🔍</button>
+				<input id="searchInput" type="text" aria-autocomplete="none">
 			</div>
 		</div>
 		
 		<script>
-			const searchInput = document.getElementById("searchbar");
+			const searchInput = document.getElementById("searchInput");
+			searchInput.onkeydown = (e) => {
+				if (e.key == "Enter") search();
+			}
 			
 			function search () {
-				window.location.href = "https://www.google.com/search?q=" + searchInput.value;
+				const link = "https://www.google.com/search?q=" + searchInput.value;
+				console.log("redirecting to " + link);
+				window.location.href = link;
 			}
 		</script>
 		
@@ -175,8 +199,6 @@
 			gl.enableVertexAttribArray(positionLocation);
 			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 			
-			gl.viewport(0, 0, canvas.width, canvas.height);
-			
 			const speed = 0.025;
 			
 			function render () {
@@ -232,12 +254,15 @@
 			}
 			
 			function resizeCanvas (gl, canvas) {
+				console.log("wdwdwdwdw");
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;
 				canvas.style.width = gl.canvas.width + "px";
 				
 				gl.useProgram(program);
 				gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+				
+				gl.viewport(0, 0, canvas.width, canvas.height);
 			}
 			
 			function createProgram (gl, vShader, fShader) {
